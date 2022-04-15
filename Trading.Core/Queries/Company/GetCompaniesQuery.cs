@@ -1,5 +1,5 @@
-﻿using MediatR;
-using Trading.Core.Mapper;
+﻿using AutoMapper;
+using MediatR;
 using Trading.Core.Models;
 using Trading.Core.Models.Request;
 using Trading.Core.Models.Response;
@@ -14,10 +14,12 @@ namespace Trading.Core.Query.Company
     internal class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, Response>
     {
         private readonly ICompanyRepository _companyRepository;
+        private readonly IMapper _mapper;
 
-        public GetCompaniesQueryHandler(ICompanyRepository companyRepository)
+        public GetCompaniesQueryHandler(ICompanyRepository companyRepository, IMapper mapper)
         {
             _companyRepository = companyRepository ?? throw new ArgumentNullException(nameof(companyRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<Response> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
@@ -25,7 +27,8 @@ namespace Trading.Core.Query.Company
             try
             {
                 var res = await _companyRepository.Get();
-                return new Response.Successed<List<CompanyDto>>(res.Select(x => x.ToDomain()).ToList());
+                var aa = _mapper.Map<List<Trading.Infrastructure.Database.Models.Company>, List<CompanyDto>>(res);
+                return new Response.Successed<List<CompanyDto>>(aa);
             }
             catch (Exception ex)
             {

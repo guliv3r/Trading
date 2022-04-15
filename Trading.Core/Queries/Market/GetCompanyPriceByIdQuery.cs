@@ -1,5 +1,5 @@
-﻿using MediatR;
-using Trading.Core.Mapper;
+﻿using AutoMapper;
+using MediatR;
 using Trading.Core.Models;
 using Trading.Core.Models.Request;
 using Trading.Core.Models.Response;
@@ -20,10 +20,12 @@ namespace Trading.Core.Query.Market
     internal class GetCompanyPriceByIdQueryHandler : IRequestHandler<GetCompanyPriceByIdQuery, Response>
     {
         private readonly IMarketRepository _marketRepository;
+        private readonly IMapper _mapper;
 
-        public GetCompanyPriceByIdQueryHandler(IMarketRepository marketRepository)
+        public GetCompanyPriceByIdQueryHandler(IMarketRepository marketRepository, IMapper mapper)
         {
             _marketRepository = marketRepository ?? throw new ArgumentNullException(nameof(marketRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<Response> Handle(GetCompanyPriceByIdQuery request, CancellationToken cancellationToken)
@@ -31,7 +33,7 @@ namespace Trading.Core.Query.Market
             try
             {
                 var res = await _marketRepository.GetMarketCompanyById(request.CompanyId);
-                return new Response.Successed<TradingDto>(res.ToDomain());
+                return new Response.Successed<TradingDto>(_mapper.Map<TradingDto>(res));
             }
             catch (Exception ex)
             {

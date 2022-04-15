@@ -44,7 +44,7 @@ namespace Trading.Api.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(Response.Successed<List<bool>>), 200)]
         [ProducesResponseType(typeof(Response.Failed), 400)]
-        public async Task<Response> Remove([FromBody] CompanyDto company)
+        public async Task<Response> Update([FromBody] CompanyDto company)
             => await _mediator.Send(new UpdateMarketCommand(company));
 
         [HttpDelete("{id}")]
